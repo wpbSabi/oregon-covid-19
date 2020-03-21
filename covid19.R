@@ -10,7 +10,7 @@ library(tidyverse)
 # import counties latitude and longitude
 counties_ll <- read_csv('oregon_counties_lat_long.csv')
 # import counties shapefile http://geog.uoregon.edu/bartlein/courses/geog495/lec06.html 
-setwd("/Users/horvasab/Documents/github/coronavirus")
+setwd("/Users/alberta/Documents/github/coronavirus")
 oregon_shape <- st_read('orcounty.shp') # requires sf package
 # oregon_shape$NAME <- toupper(oregon_shape$NAME) # if merging with data source
 # TO OPTIMIZE UPDATE TO  select only the fields that are needed
@@ -41,14 +41,19 @@ p3 <- ggplot() +
                    size = 3
   ) +
   geom_point(data = cities, 
-             aes(y = latitude, x =  longitude, size = population)) +
+             aes(y = latitude, x =  longitude, size = population/2),
+             show.legend = FALSE) +
   geom_text_repel(data = cities, aes(longitude, latitude, label = city),
                   nudge_x = -2,
                   nudge_y = 1,
                   force = 0.5) +
   #           shape = 21, size = 4, color = 'black')) +
   coord_sf() +
-  ggtitle("Oregon counties with COVID-19 cases") + 
+  ggtitle("Oregon COVID-19 Cases by County: March 20, 2020") + 
+  theme_void() + 
+  theme(plot.title = element_text(hjust = 0.5)) +
+  xlab("") +  
+  ylab("") +
   scale_fill_manual(values = custom_color_scale)
 p3
 
