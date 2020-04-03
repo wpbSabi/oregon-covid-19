@@ -24,7 +24,7 @@ oregon_covid19_df <- rvest::html_table(oregon_covid19)[[1]] %>%
 # write.csv(oregon_covid19_df, file=csvFileName, row.names = FALSE)
 
 write.csv(oregon_covid19_df, 'covid-19-data-daily - today_map.csv', row.names = FALSE)
-# validate that this is actually new from yesterday's data before merge
+
 
 # import historical data
 # all_data <- read_csv('covid-19-data-daily - all.csv',
@@ -40,6 +40,14 @@ all_data <- read_csv('covid-19-data-daily - all.csv',
                                      `Deaths*` = col_integer(),
                                      Negative = col_integer(),
                                      Snapshot = col_date(format = "%m/%d/%y")))
+
+# validate that this is actually new from yesterday's data before merge
+oregon_covid19_df %>% tally(`Positive†`)
+all_data %>% 
+  select(`Positive†`,Snapshot) %>% 
+  group_by(Snapshot) %>%
+  tally(`Positive†`) %>%
+  arrange(desc(Snapshot)) 
 
 # merge the new data to the historical data
 all_data_today_added <- rbind(all_data, oregon_covid19_df)
@@ -77,10 +85,10 @@ custom_color_scale <- c('#fff7fb','#ece7f2','#d0d1e6','#a6bddb',
                         '#74a9cf','#3690c0','#0570b0','#045a8d',
                         '#023858')
 merge2$Cases <- cut(merge2$`Positive†`, 
-                   breaks=c(-1,0,10,20,30,50,75,100,150,200),
-                   labels=c("0","1 - 10","11 - 20","21 - 30",
-                            "31 - 50","51 - 75","76 - 100",
-                            "101 - 150","151 - 200"))
+                   breaks=c(-1,0,10,20,50,100,150,200,250,300),
+                   labels=c("0","1 - 10","11 - 20","21 - 50",
+                            "51 - 100","101 - 150","151 - 200",
+                            "201 - 250","251 - 300"))
 
 p3 <- ggplot() + 
   geom_sf(data = merge2, aes(fill = Cases), size = 0.3) + 
@@ -99,7 +107,7 @@ p3 <- ggplot() +
                   force = 0.5) +
   #           shape = 21, size = 4, color = 'black')) +
   coord_sf() +
-  ggtitle("Oregon COVID-19 Cases by County: March 20, 2020") + 
+  ggtitle("Oregon COVID-19 Cases by County: April 2, 2020") + 
   theme_void() + 
   theme(plot.title = element_text(hjust = 0.5)) +
   xlab("") +  
