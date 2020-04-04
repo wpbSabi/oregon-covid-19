@@ -5,6 +5,7 @@
 
 library(tidyverse) # data
 library(ggrepel) # helps with labels on plots
+#library(ggpubr)
 library(rvest) # for webscraping
 library(sf) # st_read for shape file
 
@@ -27,19 +28,22 @@ write.csv(oregon_covid19_df, 'covid-19-data-daily - today_map.csv', row.names = 
 
 
 # import historical data
-# all_data <- read_csv('covid-19-data-daily - all.csv',
-#                      col_type = cols(County = col_character(),
-#                                      `Positive†` = col_integer(),
-#                                      `Deaths*` = col_integer(),
-#                                      Negative = col_integer(),
-#                                      Snapshot = col_date(format = "%Y-%m-%d")))
 
+# this version works on home computer
 all_data <- read_csv('covid-19-data-daily - all.csv',
                      col_type = cols(County = col_character(),
                                      `Positive†` = col_integer(),
                                      `Deaths*` = col_integer(),
                                      Negative = col_integer(),
-                                     Snapshot = col_date(format = "%m/%d/%y")))
+                                     Snapshot = col_date(format = "%Y-%m-%d")))
+
+# this version works on macbook pro
+# all_data <- read_csv('covid-19-data-daily - all.csv',
+#                      col_type = cols(County = col_character(),
+#                                      `Positive†` = col_integer(),
+#                                      `Deaths*` = col_integer(),
+#                                      Negative = col_integer(),
+#                                      Snapshot = col_date(format = "%m/%d/%y")))
 
 # validate that this is actually new from yesterday's data before merge
 oregon_covid19_df %>% tally(`Positive†`)
@@ -50,7 +54,15 @@ all_data %>%
   arrange(desc(Snapshot)) 
 
 # merge the new data to the historical data
+all_data_today_added <- all_data # if the data has already been updated
 all_data_today_added <- rbind(all_data, oregon_covid19_df)
+
+multnomah <- all_data_today_added %>%
+  filter(County == 'Multnomah') %>%
+  select(County, `Positive†`,Snapshot) %>% 
+  group_by(County, Snapshot) %>%
+  tally(`Positive†`) %>%
+  arrange(desc(Snapshot)) 
 
 csvFileName <- paste("covid-19-data-daily - all.csv")
 write.csv(all_data_today_added, file=csvFileName, row.names = FALSE)
@@ -63,6 +75,9 @@ cities <- data.frame(city = c('Portland', 'Salem', 'Eugene'),
                      population = c(653115, 173442, 171245),
                      latitude = c(45.54, 44.92, 44.06),
                      longitude = c(-122.65, -123.02, -123.12))
+
+# 2018 population by county for density map
+county_pop <- read_csv('oregon_population_by_county.csv')
 
 # import counties shapefile http://geog.uoregon.edu/bartlein/courses/geog495/lec06.html 
 oregon_shape <- st_read('orcounty.shp') %>% select(NAME)
@@ -90,7 +105,7 @@ merge2$Cases <- cut(merge2$`Positive†`,
                             "51 - 100","101 - 150","151 - 200",
                             "201 - 250","251 - 300"))
 
-p3 <- ggplot() + 
+p1 <- ggplot() + 
   geom_sf(data = merge2, aes(fill = Cases), size = 0.3) + 
   geom_label_repel(data = merge2, aes(Long, Lat, label = NAME), 
                    force = 0.2,
@@ -113,14 +128,60 @@ p3 <- ggplot() +
   xlab("") +  
   ylab("") +
   scale_fill_manual(values = custom_color_scale)
-p3
 
 
 # LINE CHART 
-ggplot(data = data_chart, aes(x = Snapshot, y = `Positive†`, 
+p2 <- ggplot(data = data_chart, aes(x = Snapshot, y = `Positive†`, 
                           color = County, label = County)) + 
   geom_line() +
   geom_label() + 
   xlab("Date") +
   ggtitle("Oregon COVID-19 Positive Tests by Day by County") 
- 
+
+
+# density map
+density1 <- merge(oregon_shape, county_pop, by.x = 'NAME', by.y = 'County')
+density1$pop <- cut(density1$'2018', 
+                    breaks=c(-1,100000,200000,300000,400000,500000,600000,700000,800000,900000),
+                    labels=c("0+","100000+","200000+","300000+","400000+","500000+","600000+",
+                             "700000+","800000+"))
+
+density1 %>% ggplot() + 
+  geom_sf(aes(fill = pop)) + #, size = 0.3) + 
+  geom_point(data = cities,aes(y = latitude, x =  longitude)) +
+  geom_text_repel(data = cities, aes(longitude, latitude, label = city),
+                   nudge_x = -4,nudge_y = 1,force = 0.5) +
+  ggtitle("Counties") +
+  coord_sf()  +
+  theme_void() + 
+  theme(plot.title = element_text(hjust = 0.5)) +
+  #xlab("") +  
+  #ylab("") 
+  scale_fill_manual(values = custom_color_scale)
+
+# positive tests per 1,000 people 
+density2 <- merge(merge2, county_pop, by.x = 'NAME', by.y = 'County') %>%
+  mutate(positive_per_million =  round(`Positive†`*1000000 / `2018`, 0))
+density2$pop <- cut(density2$positive_per_million, 
+                    breaks=c(-1,100,200,300,400,500,600,700,800,900),
+                    labels=c("0+","100+","200+","300+","400+","500+","600+",
+                             "700+","800+"))
+
+
+density2 %>% ggplot() + 
+  geom_sf(aes(fill = pop)) + #, size = 0.3) + 
+  geom_point(data = cities,aes(y = latitude, x =  longitude)) +
+  geom_text_repel(data = cities, aes(longitude, latitude, label = city),
+                  nudge_x = -4,nudge_y = 1,force = 0.5) +
+  ggtitle("Positive Tests per Million People") +
+  coord_sf()  +
+  theme_void() + 
+  theme(plot.title = element_text(hjust = 0.5)) +
+  #xlab("") +  
+  #ylab("") 
+  scale_fill_manual(values = custom_color_scale)
+# grid map
+ #ggarrange(p1, density1)
+          # , bp + rremove("x.text"), 
+          # labels = c("A", "B", "C"),
+          # ncol = 2, nrow = 2)
