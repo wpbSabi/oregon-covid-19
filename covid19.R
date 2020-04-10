@@ -8,6 +8,7 @@ library(ggrepel) # helps with labels on plots
 #library(ggpubr)
 library(rvest) # for webscraping
 library(sf) # st_read for shape file
+library(ggthemes)
 
 
 # set working directory to your folder, create variable first
@@ -54,7 +55,7 @@ all_data %>%
   arrange(desc(Snapshot)) 
 
 # merge the new data to the historical data
-all_data_today_added <- all_data # if the data has already been updated
+# all_data_today_added <- all_data # if the data has already been updated
 all_data_today_added <- rbind(all_data, oregon_covid19_df)
 
 multnomah <- all_data_today_added %>%
@@ -130,13 +131,36 @@ p1 <- ggplot() +
   scale_fill_manual(values = custom_color_scale)
 
 
-# LINE CHART 
+# LINE CHART S
 p2 <- ggplot(data = data_chart, aes(x = Snapshot, y = `Positive†`, 
                           color = County, label = County)) + 
   geom_line() +
   geom_label() + 
   xlab("Date") +
   ggtitle("Oregon COVID-19 Positive Tests by Day by County") 
+
+more_cases <- data_chart %>%
+  filter(County == 'Washington' | County == 'Multnomah' |
+           County == 'Marion' | County == 'Clackamas') %>%
+  mutate(n = `Positive†`) %>%
+  select(County, Snapshot, n)
+less_cases <- data_chart %>%
+  filter(County != 'Washington' & County != 'Multnomah' &
+           County != 'Marion' & County != 'Clackamas') %>%
+  select(Snapshot, `Positive†`) %>%
+  mutate(County = 'Counties with < 100') %>%
+  group_by(County,Snapshot) %>%
+  tally(sum(`Positive†`)) %>%
+  arrange(desc(n))
+cases <- bind_rows(more_cases,less_cases)
+
+p3 <- ggplot(data = cases, aes(x = Snapshot, y = n, 
+                                    color = County,label = County)) + 
+  geom_line() +
+  xlab("Date") +
+  ggtitle("Oregon COVID-19 Positive Tests by County") +
+  theme_bw()
+
 
 
 # density map
