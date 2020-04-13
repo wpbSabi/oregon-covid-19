@@ -10,7 +10,6 @@ library(rvest) # for webscraping
 library(sf) # st_read for shape file
 library(ggthemes)
 
-
 # set working directory to your folder, create variable first
 setwd(working_directory)
 
@@ -19,14 +18,14 @@ oregon_covid19 <- html_nodes(read_html("https://govstatus.egov.com/OR-OHA-COVID-
                              xpath='//*[@id="collapseOne"]/div/table[1]')
 oregon_covid19_df <- rvest::html_table(oregon_covid19)[[1]] %>%
   mutate(Snapshot = as.Date(Sys.Date())) %>%
-  filter(County != 'Total')
+  #mutate(Snapshot = as.Date('2020-04-11')) %>%
+  filter(County != 'Total') 
 
 # output the daily data in a unique file
 # csvFileName <- paste("daily_covid_",Sys.time(), ".csv",sep="")
 # write.csv(oregon_covid19_df, file=csvFileName, row.names = FALSE)
 
 write.csv(oregon_covid19_df, 'covid-19-data-daily - today_map.csv', row.names = FALSE)
-
 
 # import historical data
 
@@ -148,7 +147,7 @@ less_cases <- data_chart %>%
   filter(County != 'Washington' & County != 'Multnomah' &
            County != 'Marion' & County != 'Clackamas') %>%
   select(Snapshot, `Positive†`) %>%
-  mutate(County = 'Counties with < 100') %>%
+  mutate(County = 'The Other 32 Counties') %>%
   group_by(County,Snapshot) %>%
   tally(sum(`Positive†`)) %>%
   arrange(desc(n))
