@@ -158,7 +158,9 @@ p3 <- ggplot(data = cases, aes(x = Snapshot, y = n,
   geom_line() +
   xlab("Date") +
   ggtitle("Oregon COVID-19 Positive Tests by County") +
-  theme_bw()
+  theme_bw() + 
+  scale_color_manual(values = c('#a6cee3','#1f78b4','#e78ac3',
+                                '#33a02c','#7570b3'))
 
 
 
