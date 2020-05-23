@@ -13,29 +13,30 @@ library(ggthemes)   # plotting background
 ### data processing
 
 # scrape data from https://govstatus.egov.com/OR-OHA-COVID-19
-oregon_covid19 <- html_nodes(
-  read_html("https://govstatus.egov.com/OR-OHA-COVID-19"),  
-  xpath='//*[@id="collapseOne"]/div/table[1]')
+oregon_covid19 <- html_nodes(read_html("https://govstatus.egov.com/OR-OHA-COVID-19"),  
+                  # xpath='//*[@id="collapseOne"]/div/table[1]') # til 5/4/2020
+                    xpath='//*[@id="collapseDemographics"]/div/table[1]') # 5/5 on
 oregon_covid19_df <- rvest::html_table(oregon_covid19)[[1]] %>%
   mutate(Snapshot = as.Date(Sys.Date())) %>%
-  #mutate(Snapshot = as.Date('2020-04-26')) %>% # if scraping next morning
-  filter(County != 'Total') 
+  #mutate(Snapshot = as.Date('2020-05-03')) %>% # if scraping next morning
+  filter(County != 'Total') %>% # also new column names on 5/5/2020
+  mutate(`Positive†` = Cases1)
 
 # import historical data
-# this version works on macbook pro
-all_data <- read_csv('covid-19-data-daily - all.csv',
-                     col_type = cols(County = col_character(),
-                                     `Positive†` = col_integer(),
-                                     `Deaths*` = col_integer(),
-                                     Negative = col_integer(),
-                                     Snapshot = col_date(format = "%Y-%m-%d")))
-# this version works on macbook air
+# this version works on some computers
 # all_data <- read_csv('covid-19-data-daily - all.csv',
 #                      col_type = cols(County = col_character(),
 #                                      `Positive†` = col_integer(),
 #                                      `Deaths*` = col_integer(),
 #                                      Negative = col_integer(),
-#                                      Snapshot = col_date(format = "%m/%d/%y")))
+#                                      Snapshot = col_date(format = "%Y-%m-%d")))
+# this version works on some other computers
+all_data <- read_csv('covid-19-data-daily - all.csv',
+                     col_type = cols(County = col_character(),
+                                     `Positive†` = col_integer(),
+                                     `Deaths*` = col_integer(),
+                                     Negative = col_integer(),
+                                     Snapshot = col_date(format = "%m/%d/%y")))
 
 # to validate data is new vs. yesterday's data before merge
 head(all_data %>% 
