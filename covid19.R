@@ -3,6 +3,7 @@
 # (2) line chart of cumulative Oregon Covid19 positives tests 
 # (3) multnomah county new positive tests by day (w/i run)
 # (4) density maps for comparison (commented out)
+# note that on 6/13/2020, OHA stopped providing updates on Saturdays and Sundays
 
 library(tidyverse)  # data wrangling and ggplot2
 library(ggrepel)    # helps with labels on plots
@@ -24,19 +25,19 @@ oregon_covid19_df <- rvest::html_table(oregon_covid19)[[1]] %>%
 
 # import historical data
 # this version works on some computers
-# all_data <- read_csv('covid-19-data-daily - all.csv',
-#                      col_type = cols(County = col_character(),
-#                                      `Positive†` = col_integer(),
-#                                      `Deaths*` = col_integer(),
-#                                      Negative = col_integer(),
-#                                      Snapshot = col_date(format = "%Y-%m-%d")))
-# this version works on some other computers
 all_data <- read_csv('covid-19-data-daily - all.csv',
                      col_type = cols(County = col_character(),
                                      `Positive†` = col_integer(),
                                      `Deaths*` = col_integer(),
                                      Negative = col_integer(),
-                                     Snapshot = col_date(format = "%m/%d/%y")))
+                                     Snapshot = col_date(format = "%Y-%m-%d")))
+# this version works on some other computers
+# all_data <- read_csv('covid-19-data-daily - all.csv',
+#                      col_type = cols(County = col_character(),
+#                                      `Positive†` = col_integer(),
+#                                      `Deaths*` = col_integer(),
+#                                      Negative = col_integer(),
+#                                      Snapshot = col_date(format = "%m/%d/%y")))
 
 # to validate data is new vs. yesterday's data before merge
 head(all_data %>% 
