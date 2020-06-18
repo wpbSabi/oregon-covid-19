@@ -3,7 +3,8 @@
 # (2) line chart of cumulative Oregon Covid19 positives tests 
 # (3) multnomah county new positive tests by day (w/i run)
 # (4) density maps for comparison (commented out)
-# note that on 6/13/2020, OHA stopped providing updates on Saturdays and Sundays
+# to do (line 30 in updated format):
+# # instead of these mutates and select, could merge without the field names
 
 library(tidyverse)  # data wrangling and ggplot2
 library(ggrepel)    # helps with labels on plots
@@ -19,10 +20,15 @@ oregon_covid19 <- html_nodes(read_html("https://govstatus.egov.com/OR-OHA-COVID-
                     xpath='//*[@id="collapseDemographics"]/div/table[1]') # 5/5 on
 oregon_covid19_df <- rvest::html_table(oregon_covid19)[[1]] %>%
   mutate(Snapshot = as.Date(Sys.Date())) %>%
-  #mutate(Snapshot = as.Date('2020-05-03')) %>% # if scraping next morning
+  #mutate(Snapshot = as.Date('2020-06-17')) %>% # if scraping next morning
   filter(County != 'Total') %>% # also new column names on 5/5/2020
-  mutate(`Positive†` = Cases1)
-
+  mutate(`Positive†` = Cases1) %>%
+  mutate(`Deaths*` = Deaths2) %>%
+  mutate(`Negative` = Negatives3) %>%
+  select(County,`Positive†`,`Deaths*`,`Negative`, Snapshot )
+  
+# instead of these mutates and select, could merge without the field names
+  
 # import historical data
 # this version works on some computers
 all_data <- read_csv('covid-19-data-daily - all.csv',
@@ -38,6 +44,8 @@ all_data <- read_csv('covid-19-data-daily - all.csv',
 #                                      `Deaths*` = col_integer(),
 #                                      Negative = col_integer(),
 #                                      Snapshot = col_date(format = "%m/%d/%y")))
+
+
 
 # to validate data is new vs. yesterday's data before merge
 head(all_data %>% 
@@ -86,10 +94,10 @@ custom_color_scale <- c('#fff7fb','#ece7f2','#d0d1e6','#a6bddb',
 
 # set breakpoints for map shading
 merge2$Cases <- cut(merge2$`Positive†`, 
-                   breaks=c(-1,0,10,20,50,100,150,200,250,300),
+                   breaks=c(-1,0,10,20,50,100,150,500,1000,2000),
                    labels=c("0","1 - 10","11 - 20","21 - 50",
-                            "51 - 100","101 - 150","151 - 200",
-                            "201 - 250","251 - 300"))
+                            "51 - 100","101 - 150","151 - 500",
+                            "501 - 1000","1001 - 2000"))
 
 # map of shaded counties by positive tests
 plot_map <- ggplot() + 
@@ -116,12 +124,16 @@ plot_map <- ggplot() +
 # line chart:  counties with most positive tests 
 more_cases <- all_data_today_added %>%
   filter(County == 'Washington' | County == 'Multnomah' |
-           County == 'Marion' | County == 'Clackamas') %>%
+           County == 'Marion' | County == 'Clackamas' | 
+           County == 'Deschutes' | County == 'Linn' | 
+           County == 'Umatilla') %>%
   mutate(n = `Positive†`) %>%
   select(County, Snapshot, n)
 less_cases <- all_data_today_added %>%
   filter(County != 'Washington' & County != 'Multnomah' &
-           County != 'Marion' & County != 'Clackamas') %>%
+           County != 'Marion' & County != 'Clackamas' &
+           County != 'Deschutes' & County != 'Linn' & 
+           County != 'Umatilla') %>%
   select(Snapshot, `Positive†`) %>%
   mutate(County = 'The Other 32 Counties') %>%
   group_by(County,Snapshot) %>%
@@ -137,8 +149,16 @@ plot_line_chart <- ggplot(data = cases, aes(x = Snapshot, y = n,
   ggtitle("Oregon COVID-19 Positive Tests by County") +
   theme_bw() + 
   scale_color_manual(values = c('#a6cee3','#1f78b4','#e78ac3',
-                                '#33a02c','#7570b3'))
+                                '#33a02c','#7570b3','#7fcdbb',
+                                '#de2d26','#636363'))
 
+all_counties_chart <- ggplot(data = all_data_today_added, aes(x = Snapshot, y = `Positive†`, 
+                                            color = County,
+                                            label = County))+
+  geom_line(size = 2) +
+  xlab("Date") +
+  ggtitle("Oregon COVID-19 Positive Tests by County") +
+  theme_bw() 
 # # density map
 # # 2018 population by county for density map 
 # county_pop <- read_csv('oregon_population_by_county.csv')
@@ -179,3 +199,4 @@ plot_line_chart <- ggplot(data = cases, aes(x = Snapshot, y = n,
 #   theme_void() + 
 #   theme(plot.title = element_text(hjust = 0.5)) +
 #   scale_fill_manual(values = custom_color_scale)
+
