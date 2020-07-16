@@ -20,7 +20,7 @@ oregon_covid19 <- html_nodes(read_html("https://govstatus.egov.com/OR-OHA-COVID-
                     xpath='//*[@id="collapseDemographics"]/div/table[1]') # 5/5 on
 oregon_covid19_df <- rvest::html_table(oregon_covid19)[[1]] %>%
   mutate(Snapshot = as.Date(Sys.Date())) %>%
-  #mutate(Snapshot = as.Date('2020-06-17')) %>% # if scraping next morning
+  #mutate(Snapshot = as.Date('2020-06-29')) %>% # if scraping next morning
   filter(County != 'Total') %>% # also new column names on 5/5/2020
   mutate(`Positive†` = Cases1) %>%
   mutate(`Deaths*` = Deaths2) %>%
@@ -94,10 +94,10 @@ custom_color_scale <- c('#fff7fb','#ece7f2','#d0d1e6','#a6bddb',
 
 # set breakpoints for map shading
 merge2$Cases <- cut(merge2$`Positive†`, 
-                   breaks=c(-1,0,10,20,50,100,150,500,1000,2000),
+                   breaks=c(-1,0,10,20,50,100,500,1000,2000,5000),
                    labels=c("0","1 - 10","11 - 20","21 - 50",
-                            "51 - 100","101 - 150","151 - 500",
-                            "501 - 1000","1001 - 2000"))
+                            "51 - 100","101 - 500","501 - 1000",
+                            "1001 - 2000","2001 - 5000"))
 
 # map of shaded counties by positive tests
 plot_map <- ggplot() + 
@@ -122,20 +122,23 @@ plot_map <- ggplot() +
   scale_fill_manual(values = custom_color_scale)
 
 # line chart:  counties with most positive tests 
+# as of 2020-07-15, at least 300 cases
 more_cases <- all_data_today_added %>%
   filter(County == 'Washington' | County == 'Multnomah' |
            County == 'Marion' | County == 'Clackamas' | 
-           County == 'Deschutes' | County == 'Linn' | 
-           County == 'Umatilla') %>%
+           County == 'Lincoln' | County == 'Lane' | 
+           County == 'Umatilla' | County == 'Malheur' |
+           County == 'Union') %>%
   mutate(n = `Positive†`) %>%
   select(County, Snapshot, n)
 less_cases <- all_data_today_added %>%
   filter(County != 'Washington' & County != 'Multnomah' &
            County != 'Marion' & County != 'Clackamas' &
-           County != 'Deschutes' & County != 'Linn' & 
-           County != 'Umatilla') %>%
+           County != 'Lincoln' & County != 'Lane' & 
+           County != 'Umatilla' & County != 'Malheur' &
+           County != 'Union') %>%
   select(Snapshot, `Positive†`) %>%
-  mutate(County = 'The Other 32 Counties') %>%
+  mutate(County = 'The Other 27 Counties') %>%
   group_by(County,Snapshot) %>%
   tally(sum(`Positive†`)) %>%
   arrange(desc(n))
@@ -150,7 +153,8 @@ plot_line_chart <- ggplot(data = cases, aes(x = Snapshot, y = n,
   theme_bw() + 
   scale_color_manual(values = c('#a6cee3','#1f78b4','#e78ac3',
                                 '#33a02c','#7570b3','#7fcdbb',
-                                '#de2d26','#636363'))
+                                '#de2d26','#636363','#bdbdbd',
+                                '#fdbb84'))
 
 all_counties_chart <- ggplot(data = all_data_today_added, aes(x = Snapshot, y = `Positive†`, 
                                             color = County,
