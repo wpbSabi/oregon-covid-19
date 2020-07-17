@@ -165,42 +165,41 @@ all_counties_chart <- ggplot(data = all_data_today_added, aes(x = Snapshot, y = 
   theme_bw() 
 # # density map
 # # 2018 population by county for density map 
-# county_pop <- read_csv('oregon_population_by_county.csv')
-# density1 <- merge(oregon_shape, county_pop, by.x = 'NAME', by.y = 'County')
-# density1$pop <- cut(density1$'2018', 
-#                     breaks=c(-1,100000,200000,300000,400000,500000,600000,
-#                              700000,800000,900000),
-#                     labels=c("0+","100000+","200000+","300000+","400000+",
-#                              "500000+","600000+",
-#                              "700000+","800000+"))
-# plot_population_density %>% ggplot() + 
-#   geom_sf(aes(fill = pop)) + 
-#   geom_point(data = cities,aes(y = latitude, x =  longitude)) +
-#   geom_text_repel(data = cities, aes(longitude, latitude, label = city),
-#                    nudge_x = -4,nudge_y = 1,force = 0.5) +
-#   ggtitle("Counties") +
-#   coord_sf()  +
-#   theme_void() + 
-#   theme(plot.title = element_text(hjust = 0.5)) +
-#   scale_fill_manual(values = custom_color_scale)
-# 
-# # positive tests per 1,000 people 
-# density2 <- merge(merge2, county_pop, by.x = 'NAME', by.y = 'County') %>%
-#   mutate(positive_per_million =  round(`Positive†`*1000000 / `2018`, 0))
-# density2$pop <- cut(density2$positive_per_million, 
-#                     breaks=c(-1,100,200,300,400,500,600,700,800,900),
-#                     labels=c("0+","100+","200+","300+","400+","500+","600+",
-#                              "700+","800+"))
-# 
+ county_pop <- read_csv('oregon_population_by_county.csv')
+density1 <- merge(oregon_shape, county_pop, by.x = 'NAME', by.y = 'County')
+density1$pop <- cut(density1$'2018',
+                    breaks=c(-1,100000,200000,300000,400000,500000,600000,
+                             700000,800000,900000),
+                    labels=c("0+","100000+","200000+","300000+","400000+",
+                             "500000+","600000+",
+                             "700000+","800000+"))
+density1 %>% ggplot() +
+  geom_sf(aes(fill = pop)) +
+  geom_point(data = cities,aes(y = latitude, x =  longitude)) +
+  geom_text_repel(data = cities, aes(longitude, latitude, label = city),
+                   nudge_x = -4,nudge_y = 1,force = 0.5) +
+  ggtitle("Population by Counties") +
+  coord_sf()  +
+  theme_void() +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  scale_fill_manual(values = custom_color_scale)
+# positive tests per 1,000 people
+density2 <- merge(merge2, county_pop, by.x = 'NAME', by.y = 'County') %>%
+  mutate(positive_per_million =  round(`Positive†`*1000000 / `2018`, 0))
+density2$pop <- cut(density2$positive_per_million,
+                    breaks=c(-1,100,500,1000,2000,4000,6000,8000,10000,15000),
+                    labels=c("0+","500+","1,000+","2,000+","4,000+","6,000+","8,000+",
+                             "10,000+","15,000+"))
+
 # # map density of covid19 by county
-# plot_covid19_density %>% ggplot() + 
-#   geom_sf(aes(fill = pop)) + #, size = 0.3) + 
-#   geom_point(data = cities,aes(y = latitude, x =  longitude)) +
-#   geom_text_repel(data = cities, aes(longitude, latitude, label = city),
-#                   nudge_x = -4,nudge_y = 1,force = 0.5) +
-#   ggtitle("Positive Tests per Million People") +
-#   coord_sf()  +
-#   theme_void() + 
-#   theme(plot.title = element_text(hjust = 0.5)) +
-#   scale_fill_manual(values = custom_color_scale)
+density2 %>% ggplot() +
+  geom_sf(aes(fill = pop)) + #, size = 0.3) +
+  geom_point(data = cities,aes(y = latitude, x =  longitude)) +
+  geom_text_repel(data = cities, aes(longitude, latitude, label = city),
+                  nudge_x = -4,nudge_y = 1,force = 0.5) +
+  ggtitle("Positive Tests per Million People") +
+  coord_sf()  +
+  theme_void() +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  scale_fill_manual(values = custom_color_scale)
 
