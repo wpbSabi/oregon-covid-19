@@ -38,12 +38,12 @@ all_data <- read_csv('covid-19-data-daily - all.csv',
                                      Negative = col_integer(),
                                      Snapshot = col_date(format = "%Y-%m-%d")))
 # this version works on some other computers
-# all_data <- read_csv('covid-19-data-daily - all.csv',
-#                      col_type = cols(County = col_character(),
-#                                      `Positive†` = col_integer(),
-#                                      `Deaths*` = col_integer(),
-#                                      Negative = col_integer(),
-#                                      Snapshot = col_date(format = "%m/%d/%y")))
+all_data <- read_csv('covid-19-data-daily - all.csv',
+                     col_type = cols(County = col_character(),
+                                     `Positive†` = col_integer(),
+                                     `Deaths*` = col_integer(),
+                                     Negative = col_integer(),
+                                     Snapshot = col_date(format = "%m/%d/%y")))
 
 
 
@@ -94,10 +94,10 @@ custom_color_scale <- c('#fff7fb','#ece7f2','#d0d1e6','#a6bddb',
 
 # set breakpoints for map shading
 merge2$Cases <- cut(merge2$`Positive†`, 
-                   breaks=c(-1,0,10,20,50,100,500,1000,2000,5000),
+                   breaks=c(-1,0,10,20,50,100,500,1000,5000,10000),
                    labels=c("0","1 - 10","11 - 20","21 - 50",
                             "51 - 100","101 - 500","501 - 1000",
-                            "1001 - 2000","2001 - 5000"))
+                            "1001 - 5000","5001 - 10000"))
 
 # map of shaded counties by positive tests
 plot_map <- ggplot() + 
@@ -120,7 +120,7 @@ plot_map <- ggplot() +
   xlab("") + # clears default label, not wanted for the map
   ylab("") + # clears default label, not wanted for the map
   scale_fill_manual(values = custom_color_scale)
-
+plot_map
 # line chart:  counties with most positive tests 
 # as of 2020-07-15, at least 300 cases
 more_cases <- all_data_today_added %>%
@@ -155,7 +155,7 @@ plot_line_chart <- ggplot(data = cases, aes(x = Snapshot, y = n,
                                 '#33a02c','#7570b3','#7fcdbb',
                                 '#de2d26','#636363','#bdbdbd',
                                 '#fdbb84'))
-
+plot_line_chart
 all_counties_chart <- ggplot(data = all_data_today_added, aes(x = Snapshot, y = `Positive†`, 
                                             color = County,
                                             label = County))+
@@ -187,9 +187,9 @@ density1 %>% ggplot() +
 density2 <- merge(merge2, county_pop, by.x = 'NAME', by.y = 'County') %>%
   mutate(positive_per_million =  round(`Positive†`*1000000 / `2018`, 0))
 density2$pop <- cut(density2$positive_per_million,
-                    breaks=c(-1,100,500,1000,2000,4000,6000,8000,10000,15000),
-                    labels=c("0+","500+","1,000+","2,000+","4,000+","6,000+","8,000+",
-                             "10,000+","15,000+"))
+                    breaks=c(-1,100,500,1000,2000,5000,10000,20000,30000,40000),
+                    labels=c("0+","500+","1,000+","2,000+","5,000+","10,000+","20,000+",
+                             "30,000+","40,000+"))
 
 # # map density of covid19 by county
 density2 %>% ggplot() +
