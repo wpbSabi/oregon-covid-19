@@ -37,15 +37,13 @@ all_data <- read_csv('covid-19-data-daily - all.csv',
                                      `Deaths*` = col_integer(),
                                      Negative = col_integer(),
                                      Snapshot = col_date(format = "%Y-%m-%d")))
-# this version works on some other computers
-all_data <- read_csv('covid-19-data-daily - all.csv',
-                     col_type = cols(County = col_character(),
-                                     `Positive†` = col_integer(),
-                                     `Deaths*` = col_integer(),
-                                     Negative = col_integer(),
-                                     Snapshot = col_date(format = "%m/%d/%y")))
-
-
+# this version works on some other computers or if the CSV is edited
+# all_data <- read_csv('covid-19-data-daily - all.csv',
+#                      col_type = cols(County = col_character(),
+#                                      `Positive†` = col_integer(),
+#                                      `Deaths*` = col_integer(),
+#                                      Negative = col_integer(),
+#                                      Snapshot = col_date(format = "%m/%d/%y")))
 
 # to validate data is new vs. yesterday's data before merge
 head(all_data %>% 
