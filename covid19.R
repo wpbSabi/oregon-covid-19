@@ -111,7 +111,7 @@ plot_map <- ggplot() +
                   nudge_y = 1,
                   force = 0.5) +
   coord_sf() +
-  ggtitle("Oregon COVID-19 Cases by County: ", Sys.Date()) + 
+  ggtitle(paste("Oregon COVID-19 Cases by County: ", Sys.Date(), sep = " ")) + 
   # 2020-05-02 added Sys.Date() rather than hardcoding the date
   theme_void() + 
   theme(plot.title = element_text(hjust = 0.5)) +
