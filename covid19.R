@@ -185,9 +185,9 @@ density1 %>% ggplot() +
 density2 <- merge(merge2, county_pop, by.x = 'NAME', by.y = 'County') %>%
   mutate(positive_per_million =  round(`Positive†`*1000000 / `2018`, 0))
 density2$pop <- cut(density2$positive_per_million,
-                    breaks=c(-1,100,500,1000,2000,5000,10000,20000,30000,40000),
+                    breaks=c(-1,100,500,1000,2000,5000,10000,20000,30000,50000),
                     labels=c("0+","500+","1,000+","2,000+","5,000+","10,000+","20,000+",
-                             "30,000+","40,000+"))
+                             "30,000+","50,000+"))
 
 # # map density of covid19 by county
 density2 %>% ggplot() +
