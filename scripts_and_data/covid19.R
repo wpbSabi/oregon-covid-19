@@ -92,10 +92,10 @@ custom_color_scale <- c('#fff7fb','#ece7f2','#d0d1e6','#a6bddb',
 
 # set breakpoints for map shading
 merge2$Cases <- cut(merge2$`Positive†`, 
-                   breaks=c(-1,0,10,20,50,100,500,1000,5000,10000),
+                   breaks=c(-1,0,10,20,50,100,500,1000,5000,20000),
                    labels=c("0","1 - 10","11 - 20","21 - 50",
                             "51 - 100","101 - 500","501 - 1000",
-                            "1001 - 5000","5001 - 10000"))
+                            "1001 - 5000","5001 - 20000"))
 
 # map of shaded counties by positive tests
 plot_map <- ggplot() + 
