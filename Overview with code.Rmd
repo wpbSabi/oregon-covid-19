@@ -33,6 +33,7 @@ library(rvest)      # webscraping
 library(sf)         # st_read for shape file
 library(ggthemes)   # plotting background
 library(cowplot)    # plotting multiple plots in a grid
+library(magick)     # creating gifs
 ```
 
 ```{r import data, include=TRUE, echo=FALSE}
@@ -153,6 +154,30 @@ plot_covid_positives <- ggplot() +
   ylab("") + # clears default label, not wanted for the map
   scale_fill_manual(values = custom_color_scale)
 plot_covid_positives
+```
+
+### To generate a GIF of the first plot using images from March to December
+Run this step and then view the plot in RStudio
+
+```{r gif first plot, include=TRUE, echo=FALSE}
+gif_df <- data.frame(file = c('scripts_and_data/oregon_covid_for_gif/Rplot01.png',
+                              'scripts_and_data/oregon_covid_for_gif/Rplot02.png',
+                              'scripts_and_data/oregon_covid_for_gif/Rplot03.png',
+                              'scripts_and_data/oregon_covid_for_gif/Rplot04.png',
+                              'scripts_and_data/oregon_covid_for_gif/Rplot05.png',
+                              'scripts_and_data/oregon_covid_for_gif/Rplot06.png',
+                              'scripts_and_data/oregon_covid_for_gif/Rplot07.png',
+                              'scripts_and_data/oregon_covid_for_gif/Rplot08.png',
+                              'scripts_and_data/oregon_covid_for_gif/Rplot09.png',
+                              'scripts_and_data/oregon_covid_for_gif/Rplot10.png'))
+
+for(i in 1:length(gif_df$file)) {
+  images <- map(gif_df$file, image_read)
+  images <- image_join(images)
+  animation <- image_animate(images, fps = 0.5)
+  #image_write(animation, 'Oregon Covid 2020 March to December.gif')
+}
+animation
 ```
 
 
