@@ -12,7 +12,8 @@ library(ggrepel)    # helps with labels on plots
 library(rvest)      # webscraping
 library(sf)         # st_read for shape file
 library(ggthemes)   # plotting background
-library(cowplot)
+library(cowplot)    # plot multiple plots in a grid
+library(magick)     # create a gif
 
 
 ### data processing
@@ -200,3 +201,22 @@ plot_positive_density
 
 plot_grid(plot_population_density, plot_positive_density,
           labels="Population and Positivity Densities", hjust=-0.5, vjust=10) 
+
+# generate a GIF from monthly snapshots of the map of shaded counties by positive tests
+gif_df <- data.frame(file = c('oregon_covid_for_gif/Rplot01.png',
+                              'oregon_covid_for_gif/Rplot02.png',
+                              'oregon_covid_for_gif/Rplot03.png',
+                              'oregon_covid_for_gif/Rplot04.png',
+                              'oregon_covid_for_gif/Rplot05.png',
+                              'oregon_covid_for_gif/Rplot06.png',
+                              'oregon_covid_for_gif/Rplot07.png',
+                              'oregon_covid_for_gif/Rplot08.png',
+                              'oregon_covid_for_gif/Rplot09.png',
+                              'oregon_covid_for_gif/Rplot10.png'))
+
+for(i in 1:length(gif_df$file)) {
+  images <- map(gif_df$file, image_read)
+  images <- image_join(images)
+  animation <- image_animate(images, fps = 0.5)
+  image_write(animation, 'Oregon Covid 2020 March to December.gif')
+}
