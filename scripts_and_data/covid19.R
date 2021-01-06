@@ -152,7 +152,9 @@ plot_line_chart <- ggplot(data = cases, aes(x = Snapshot, y = n,
   scale_color_manual(values = c('#a6cee3','#1f78b4','#e78ac3',
                                 '#33a02c','#7570b3','#7fcdbb',
                                 '#de2d26','#636363','#bdbdbd',
-                                '#fdbb84'))
+                                '#fdbb84')) +
+  theme(axis.title.x = element_blank(),
+        axis.title.y = element_blank())
 plot_line_chart
 
 # # density map
@@ -182,7 +184,7 @@ plot_population_density
 density2 <- merge(merge2, county_pop, by.x = 'NAME', by.y = 'County') %>%
   mutate(positive_per_million =  round(`Positive†`*1000000 / `2018`, 0))
 density2$pop <- cut(density2$positive_per_million,
-                    breaks=c(-1,10000,20000,30000,40000,50000,60000,70000,80000,90000),
+                    breaks=c(-1,10000,20000,30000,40000,50000,60000,70000,80000,100000),
                     labels=c("0+","10,000+","20,000+","30,000+","40,000+","50,000+","60,000+",
                              "70,000+","80,000+"))
 # map density of covid19 by county
