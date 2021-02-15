@@ -1,5 +1,5 @@
 # Created by: Sabi Horvat, March 2020 - April 2020
-# Updated December 2020
+# Updated February 2020 for scaling and gif
 # This script includes webscraping from the Oregon Health Authority website
 #   the scrape pulls cumulative Covid19 positive tests by county
 # The following plots are different than the plots which are easily available:
@@ -94,10 +94,10 @@ custom_color_scale <- c('#fff7fb','#ece7f2','#d0d1e6','#a6bddb',
 
 # set breakpoints for map shading
 merge2$Cases <- cut(merge2$`Positive†`, 
-                   breaks=c(-1,0,50,100,500,1000,5000,10000,20000,30000),
+                   breaks=c(-1,0,50,100,500,1000,5000,10000,20000,40000),
                    labels=c("0","1 - 50","51 - 100","101 - 500",
                             "501 - 1000","1001 - 5000","5001 - 10000",
-                            "10001 - 20000","20001 - 30000"))
+                            "10001 - 20000","20001 - 40000"))
 
 # map of shaded counties by positive tests
 plot_covid_positives <- ggplot() + 
@@ -184,9 +184,9 @@ plot_population_density
 density2 <- merge(merge2, county_pop, by.x = 'NAME', by.y = 'County') %>%
   mutate(positive_per_million =  round(`Positive†`*1000000 / `2018`, 0))
 density2$pop <- cut(density2$positive_per_million,
-                    breaks=c(-1,10000,20000,30000,40000,50000,60000,70000,80000,100000),
+                    breaks=c(-1,10000,20000,30000,40000,50000,60000,70000,100000,150000),
                     labels=c("0+","10,000+","20,000+","30,000+","40,000+","50,000+","60,000+",
-                             "70,000+","80,000+"))
+                             "70,000+","100,000+"))
 # map density of covid19 by county
 plot_positive_density <- density2 %>% ggplot() +
   geom_sf(aes(fill = pop)) + #, size = 0.3) +
@@ -214,7 +214,9 @@ gif_df <- data.frame(file = c('oregon_covid_for_gif/Rplot01.png',
                               'oregon_covid_for_gif/Rplot07.png',
                               'oregon_covid_for_gif/Rplot08.png',
                               'oregon_covid_for_gif/Rplot09.png',
-                              'oregon_covid_for_gif/Rplot10.png'))
+                              'oregon_covid_for_gif/Rplot10.png',
+                              'oregon_covid_for_gif/Rplot11.png',
+                              'oregon_covid_for_gif/Rplot12.png'))
 
 for(i in 1:length(gif_df$file)) {
   images <- map(gif_df$file, image_read)
