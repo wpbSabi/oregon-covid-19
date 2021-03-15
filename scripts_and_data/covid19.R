@@ -216,7 +216,8 @@ gif_df <- data.frame(file = c('oregon_covid_for_gif/Rplot01.png',
                               'oregon_covid_for_gif/Rplot09.png',
                               'oregon_covid_for_gif/Rplot10.png',
                               'oregon_covid_for_gif/Rplot11.png',
-                              'oregon_covid_for_gif/Rplot12.png'))
+                              'oregon_covid_for_gif/Rplot12.png',
+                              'oregon_covid_for_gif/Rplot13.png'))
 
 for(i in 1:length(gif_df$file)) {
   images <- map(gif_df$file, image_read)
@@ -224,3 +225,4 @@ for(i in 1:length(gif_df$file)) {
   animation <- image_animate(images, fps = 0.5)
   image_write(animation, 'Oregon Covid 2020 March to December.gif')
 }
+
