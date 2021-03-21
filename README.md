@@ -1,18 +1,49 @@
 
-# What is oregon-covid-19? 
+# Oregon COVID-19 
 
-This program creates visualizations of the Coronavirus (COVID-19) spread in Oregon.
-The data source is from the Oregon Health Authority (OHA) website, and the data is scraped using the rvest package in R. 
+The R script and R markdown in this repository are equivalent methods for the following visualizations of the Coronavirus (COVID-19) spread in Oregon.
+1. Positive Test Results by County (by day) on an Oregon county map
+2. Cumulative Positive Test Results on a line chart to compare counties
 
-# Why/History
+The data source is the Oregon Health Authority (OHA) website, and the data is scraped using the rvest package in R. 
 
-These visualizations are helpful to understand how COVID-19 is spreading in Oregon. 
 
-## Want to know more or see a quick summary?
+## Why/History
 
-Check out 'Overview oregon-covid-19.pdf'
+These visualizations are helpful to understand how COVID-19 is spreading in Oregon. Whereas statewide data of daily positive test results has been readily available, I was interested to learn more about how the coronavirus pandemic was spreading closer to home.  Therefore, I started utilizing the public data by county to create visualizations and track trends.  At first, I scraped the data daily.  Currently, I scrape the data monthly for the GIF but no longer run the R script daily.  In addition to developing more reporting systems, after a few months the OHA limited updates to weekdays, and created a weekly report that also included positive tests by zipcode (for those zipcodes with a minimum number of cases).
 
-# How do I run the code?
+![OHA Data](https://github.com/wpbSabi/oregon-covid-19/blob/master/scripts_and_data/OHA_data.png)
+
+Links to data:
+* [OHA Main Response page](https://govstatus.egov.com/OR-OHA-COVID-19)
+* [OHA's New Dashboard](https://public.tableau.com/profile/oregon.health.authority.covid.19#!/vizhome/OregonHealthAuthorityCOVID-19DataDashboard/COVID-19EPICases)
+* [OHA Daily Reports and Weekly Updates](https://www.oregon.gov/oha/erd/pages/covid-19-news.aspx)
+* [Oregonian by Zipcode based on OHA Weekly Updates](https://projects.oregonlive.com/coronavirus/cases-by-zip)
+
+
+## Oregon Health Authority Covid-19 Statewide Dashboard 
+
+The Oregon Health Authority's dashboard now shows the daily positive test results among other factors.
+
+![OHA]https://github.com/wpbSabi/oregon-covid-19/blob/master/images/OHA_data.png
+
+
+## Oregon Covid by County Visualizations
+
+For reviewing the data by county, let's first look at the county population density and the total positive tests per million people.  
+
+![OHA](https://github.com/wpbSabi/oregon-covid-19/blob/master/images/Populalation%20and%20Positivity%20Densities.png)
+
+The cumulative cases by county provides insight to the trends by county.  The similarity of much of the trends among counties shows that each county's cornonavirus infection rate is correlated to the rest of the state. 
+
+![Line](https://github.com/wpbSabi/oregon-covid-19/blob/master/images/Cases%20by%20County%20Line%20Chart.png)
+
+The following GIF shows the cumulative monthly COVID-19 positive test results by county.  This visualization is able to share specific shorter-term trends in the spread of the coronavirus.
+
+![GIF](https://github.com/wpbSabi/oregon-covid-19/blob/master/images/Oregon%20Covid%20GIF.gif)
+
+
+## How do I run the code?
 
 If you have cloned the repository, run 'covid19.R'
 
