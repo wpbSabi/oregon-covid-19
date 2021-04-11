@@ -143,8 +143,7 @@ less_cases <- all_data_today_added %>%
 cases <- bind_rows(more_cases,less_cases)
 
 plot_line_chart <- ggplot(data = cases, aes(x = Snapshot, y = n, 
-                                    color = County,
-                                    label = County))+
+                                    color = County))+
   geom_line(size = 2) +
   xlab("Date") +
   ggtitle("Oregon COVID-19 Positive Tests by County") +
