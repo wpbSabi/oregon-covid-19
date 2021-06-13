@@ -121,10 +121,11 @@ custom_color_scale <- c('#fff7fb','#ece7f2','#d0d1e6','#a6bddb',
 
 # set breakpoints for map shading
 merge2$Cases <- cut(merge2$`Positive†`, 
-                   breaks=c(-1,0,50,100,500,1000,5000,10000,20000,40000),
+                   breaks=c(-1,0,50,100,500,1000,5000,10000,30000,60000),
                    labels=c("0","1 - 50","51 - 100","101 - 500",
                             "501 - 1000","1001 - 5000","5001 - 10000",
-                            "10001 - 20000","20001 - 40000"))
+                            "10001 - 30000","30001 - 60000"))
+
 
 # 2018 population by county for density map
 county_pop <- read_csv('scripts_and_data/oregon_population_by_county.csv')
@@ -261,9 +262,9 @@ plot_population_density
 density2 <- merge(merge2, county_pop, by.x = 'NAME', by.y = 'County') %>%
   mutate(positive_per_million =  round(`Positive†`*1000000 / `2018`, 0))
 density2$pop <- cut(density2$positive_per_million,
-                    breaks=c(-1,10000,20000,30000,40000,50000,60000,70000,80000,90000),
+                    breaks=c(-1,10000,20000,30000,40000,50000,60000,70000,100000,150000),
                     labels=c("0+","10,000+","20,000+","30,000+","40,000+","50,000+","60,000+",
-                             "70,000+","80,000+"))
+                             "70,000+","100,000+"))
 # map density of covid19 by county
 plot_positive_density <- density2 %>% ggplot() +
   geom_sf(aes(fill = pop)) + #, size = 0.3) +
