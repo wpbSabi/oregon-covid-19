@@ -51,3 +51,7 @@ If you have cloned the repository, run 'covid19.R'
 Alternatively, you may run 'Overview with code.Rmd' if you prefer to knit any modifications directly into a PDF afterwards.
 
 In addition to creating the visualizations, the R script and/or RMarkdown will also update the historical repository of scrapes in the CSV file.  Don't worry if you run the script multiple times in the same day, as duplicate data will not be written as there is a validation check to ensure that only one webscrape is conducted each day.  The OHA website is only updated with data once per day, but the time of day is not consistent and the website is no longer updated on Saturdays and Sundays.
+
+# Geospatial map link from analysis in September of 2021
+
+https://github.com/wpbSabi/geospatial/tree/main/one_in_covid_deaths
